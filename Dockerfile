@@ -1,6 +1,6 @@
 # Fase de build
 FROM node:22-alpine AS builder
-
+ARG NEXT_PUBLIC_API_URL
 # Define o diretório de trabalho na imagem
 WORKDIR /app
 
@@ -33,6 +33,6 @@ EXPOSE 3000
 
 # Define a variável de ambiente de produção
 ENV NODE_ENV=production
-
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_UR}L
 # Comando para iniciar a aplicação Next.js
 CMD ["npm", "start"]
