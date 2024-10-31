@@ -33,6 +33,6 @@ EXPOSE 3000
 
 # Define a variável de ambiente de produção
 ENV NODE_ENV=production
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_UR}L
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 # Comando para iniciar a aplicação Next.js
 CMD ["npm", "start"]
