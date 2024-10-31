@@ -9,7 +9,7 @@ import { UserDocument } from "@/app/interfaces/user/user.document";
 import { services } from "@/app/services/services";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-const page = () => {
+const Page = () => {
   const props = {
     permission: PermissionsEnum.CREATE_FORM,
   };
@@ -76,6 +76,7 @@ const page = () => {
 
   useEffect(() => {
     getInfos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -95,4 +96,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

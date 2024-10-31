@@ -30,7 +30,7 @@ const useAuth = (requiredPermissions: string[] = []) => {
     };
     setAuthenticated(authenticated());
     setHasPermission(hasPermission());
-  }, [router]);
+  }, [router, requiredPermissions]);
 
   useEffect(() => {
     checkPermissions();

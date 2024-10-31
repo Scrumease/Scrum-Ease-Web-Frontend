@@ -1,3 +1,4 @@
+"use client";
 import { PermissionsEnum } from "@/app/enums/permissions.enum";
 import useAuth from "@/app/hooks/useAuth";
 import { DecodedToken } from "@/app/utils/token";
@@ -69,39 +70,39 @@ const CreateRouter = ({
   items: CreateRouterProps[];
 }): JSX.Element[] => {
   return items.map((item, index) => {
-    if (item.permission) {
-      const { hasPermission } = useAuth([item.permission]);
-      if (!hasPermission) return <></>;
-    }
-
-    if (item.nested) {
-      const items = CreateRouter({ items: item.nested.items });
-      if (items.every((e) => e.type == React.Fragment)) return <></>;
-      else {
-        return (
-          <div className="collapse collapse-arrow border-none bg-base-200 border">
-            <input type="checkbox" />
-            <div className="collapse-title text-md font-medium">
-              {item.label}
-            </div>
-            <div className="collapse-content">
-              {items.map((item, index) => (
-                <div key={index}>{item}</div>
-              ))}
-            </div>
-          </div>
-        );
-      }
-    }
-    return (
-      <li key={index} className="mb-2">
-        <Link href={item.href} className="justify-between font-medium">
-          <div className="font-medium">{item.label}</div>
-          {item.icon && <item.icon />}
-        </Link>
-      </li>
-    );
+    return <CreateItem key={index} item={item} />;
   });
+};
+
+const CreateItem = ({ item }: { item: CreateRouterProps }): JSX.Element => {
+  const { hasPermission } = useAuth(item.permission ? [item.permission] : []);
+  if (item.permission && !hasPermission) return <></>;
+
+  if (item.nested) {
+    const items = CreateRouter({ items: item.nested.items });
+    if (items.every((e) => e.type == React.Fragment)) return <></>;
+    else {
+      return (
+        <div className="collapse collapse-arrow border-none bg-base-200 border">
+          <input type="checkbox" />
+          <div className="collapse-title text-md font-medium">{item.label}</div>
+          <div className="collapse-content">
+            {items.map((item, index) => (
+              <div key={index}>{item}</div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+  }
+  return (
+    <li className="mb-2">
+      <Link href={item.href} className="justify-between font-medium">
+        <div className="font-medium">{item.label}</div>
+        {item.icon && <item.icon />}
+      </Link>
+    </li>
+  );
 };
 
 export default SidebarItems;

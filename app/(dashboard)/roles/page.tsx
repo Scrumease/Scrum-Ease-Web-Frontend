@@ -17,7 +17,7 @@ import useAuth from "@/app/hooks/useAuth";
 import CreateEditModal from "@/app/components/modais/createEdit";
 import { PermissionsEnum } from "@/app/enums/permissions.enum";
 
-const page = () => {
+const Page = () => {
   const props = {
     permission: PermissionsEnum.VIEW_ROLE,
   };
@@ -93,6 +93,7 @@ const Table = () => {
 
   useEffect(() => {
     getAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   const handleFilterSubmit = (data: { search: string }) => {
@@ -190,6 +191,7 @@ const EditRoleModal = ({
       initialValues: initialValues,
     });
     setIsLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role.name]);
 
   useEffect(() => {
@@ -342,4 +344,4 @@ const CreateRoleModal = ({
   );
 };
 
-export default page;
+export default Page;

@@ -26,7 +26,7 @@ const MultiStepForm = ({
     {
       ...formDocument,
       projectId: (formDocument?.projectId as ProjectDocument)?._id as string,
-    } || {}
+    }
   );
 
   const handleNextStep = (data: Partial<FormSchema>) => {

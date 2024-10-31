@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect } from "react";
 
-const page = ({ params }: { params: { formId: string } }) => {
+const Page = ({ params }: { params: { formId: string } }) => {
   const [daily, setDaily] = React.useState<{
     today: DailyDocument;
     yesterday: DailyDocument;
@@ -28,10 +28,12 @@ const page = ({ params }: { params: { formId: string } }) => {
       console.error("Error checking or creating daily:", error);
       toast("Erro ao buscar daily", "error");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     checkOrCreateDaily();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmit = async (response: FormResponse) => {
@@ -76,4 +78,4 @@ const page = ({ params }: { params: { formId: string } }) => {
   );
 };
 
-export default page;
+export default Page;

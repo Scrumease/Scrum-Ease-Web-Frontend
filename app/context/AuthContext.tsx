@@ -8,7 +8,11 @@ export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-export const AuthProvider = ({ children }:{children: React.ReactNode }): React.JSX.Element => {
+export const AuthProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}): React.JSX.Element => {
   const router = useRouter();
   useEffect(() => {
     const userInfo = getUserInfoFromToken();
@@ -17,11 +21,8 @@ export const AuthProvider = ({ children }:{children: React.ReactNode }): React.J
       router.push("/auth/login");
       return;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (
-    <AuthContext.Provider value={{}}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{}}>{children}</AuthContext.Provider>;
 };

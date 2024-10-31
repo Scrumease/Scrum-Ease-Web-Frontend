@@ -68,13 +68,13 @@ const Step3 = ({
           <p>
             <strong>Horário da Notificação:</strong> {formData.notifyTime}
           </p>
-          <p>
+          {/* <p>
             <strong>Destinatários de Notificação:</strong>{" "}
             {users
               .filter((u) => (formData.notifyRecipients || []).includes(u._id))
               .map((u) => u.name)
               .join(", ") || "Nenhum destinatário"}
-          </p>
+          </p> */}
         </div>
         <div className="divider"></div>
 

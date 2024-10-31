@@ -10,7 +10,7 @@ import { UserDocument } from "@/app/interfaces/user/user.document";
 import { services } from "@/app/services/services";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-const page = ({ params }: { params: { id: string } }) => {
+const Page = ({ params }: { params: { id: string } }) => {
   const props = {
     permission: PermissionsEnum.UPDATE_FORM,
   };
@@ -87,6 +87,7 @@ const page = ({ params }: { params: { id: string } }) => {
     loadFormData(params.id);
     getAllProjects();
     getAllUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -107,4 +108,4 @@ const page = ({ params }: { params: { id: string } }) => {
   );
 };
 
-export default page;
+export default Page;

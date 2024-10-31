@@ -7,7 +7,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { MdDynamicForm } from "react-icons/md";
 
-const page = () => {
+const Page = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -34,6 +34,7 @@ const page = () => {
 
   useEffect(() => {
     getProjects();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   return (
@@ -69,7 +70,7 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
 
 const ProjectCard = ({ formDocument }: { formDocument: FormDocument[] }) => {
   return (

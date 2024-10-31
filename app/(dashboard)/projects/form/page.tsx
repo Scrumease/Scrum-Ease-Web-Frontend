@@ -86,6 +86,7 @@ const Form = ({ params }: { params: { id: string } }) => {
 
     fetchUsers();
     if (params.id) loadProjectData(params.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
   const onSubmit = async (data: ProjectFormValues) => {

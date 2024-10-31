@@ -18,7 +18,7 @@ import useAuth from "@/app/hooks/useAuth";
 import { useToast } from "@/app/context/ToastContext";
 import { PermissionsEnum } from "@/app/enums/permissions.enum";
 
-const page = () => {
+const Page = () => {
   const props = {
     permission: PermissionsEnum.VIEW_PROJECT,
   };
@@ -100,11 +100,13 @@ const Table = () => {
         setLoading(false);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentPage]
   );
 
   useEffect(() => {
     getAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   const handleFilterSubmit = (data: { search: string }) => {
@@ -160,4 +162,4 @@ const Table = () => {
   );
 };
 
-export default page;
+export default Page;

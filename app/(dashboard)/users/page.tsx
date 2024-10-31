@@ -9,7 +9,7 @@ import Filters from "./filters";
 import { User } from "@/app/interfaces/user/user.interface";
 import { PermissionsEnum } from "@/app/enums/permissions.enum";
 
-const page = () => {
+const Page = () => {
   const props = {
     permission: PermissionsEnum.LIST_USERS,
   };
@@ -55,6 +55,7 @@ const Table = () => {
 
   useEffect(() => {
     getAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   const handleFilterSubmit = (data: { search: string }) => {
@@ -69,4 +70,4 @@ const Table = () => {
   );
 };
 
-export default page;
+export default Page;

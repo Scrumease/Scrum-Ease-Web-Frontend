@@ -38,6 +38,7 @@ const CardView = ({ canCreate }: { canCreate: boolean }) => {
         setLoading(false);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentPage]
   );
 
@@ -55,10 +56,12 @@ const CardView = ({ canCreate }: { canCreate: boolean }) => {
 
   useEffect(() => {
     checkHaveProject();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     getAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   return (

@@ -3,7 +3,7 @@ import Authorize from "@/app/components/Authorize";
 import Table from "@/app/components/pages/forms/table";
 import { PermissionsEnum } from "@/app/enums/permissions.enum";
 import useAuth from "@/app/hooks/useAuth";
-const page = () => {
+const Page = () => {
   const canCreate = useAuth([PermissionsEnum.CREATE_FORM]);
   const props = {
     permission: PermissionsEnum.VIEW_FORM,
@@ -18,4 +18,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

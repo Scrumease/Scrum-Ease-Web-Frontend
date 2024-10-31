@@ -4,7 +4,8 @@ import { PermissionsEnum } from "@/app/enums/permissions.enum";
 import useAuth from "@/app/hooks/useAuth";
 import Link from "next/link";
 import { MdDynamicForm } from "react-icons/md";
-const page = () => {
+
+const Page = () => {
   const canAccessForms = useAuth([PermissionsEnum.VIEW_FORM]);
   const props = {
     permission: PermissionsEnum.VIEW_CONFIGS,
@@ -20,7 +21,7 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
 
 const FormCard = () => {
   return (

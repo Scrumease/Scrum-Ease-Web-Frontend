@@ -46,10 +46,21 @@ const Step1 = ({
       form.trigger(key);
       return;
     }
-    setValue(
-      key,
-      selectedOptions.map((option) => option.value)
-    );
+    let values = [];
+    if (key === "notifyDays") {
+      values = selectedOptions.map(
+        (option) =>
+          option.value as
+            | "Monday"
+            | "Tuesday"
+            | "Wednesday"
+            | "Thursday"
+            | "Friday"
+            | "Saturday"
+            | "Sunday"
+      );
+      setValue(key, values);
+    }
     form.trigger(key);
   };
 

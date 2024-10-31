@@ -4,7 +4,10 @@ import { redirect, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { services } from "../services/services";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CompleteRegistrationFormValues, completeRegistrationSchema } from "./form";
+import {
+  CompleteRegistrationFormValues,
+  completeRegistrationSchema,
+} from "./form";
 import { useForm } from "react-hook-form";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { useToast } from "../context/ToastContext";
@@ -20,7 +23,7 @@ const Page = () => {
   const [isValid, setIsValid] = useState<boolean | null>(null);
   const router = useRouter();
   const addToast = useToast();
-  
+
   const [newUser, setNewUser] = useState<boolean>(false);
 
   const params = {
@@ -37,9 +40,15 @@ const Page = () => {
         tenantId: params.tenantId,
       });
 
-      if(!response.newUser){
-        await services.authService.completeRegistrationRegisteredUser({tenantId: params.tenantId, email: params.email});
-        addToast("Organização adicionada, redirecionando para login", "success");
+      if (!response.newUser) {
+        await services.authService.completeRegistrationRegisteredUser({
+          tenantId: params.tenantId,
+          email: params.email,
+        });
+        addToast(
+          "Organização adicionada, redirecionando para login",
+          "success"
+        );
         redirect("/auth/login");
       }
 
@@ -53,6 +62,7 @@ const Page = () => {
   useEffect(() => {
     const decodedToken = decodeURIComponent(params.token);
     validateToken(decodedToken);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.token]);
 
   useEffect(() => {
@@ -60,26 +70,24 @@ const Page = () => {
       addToast("Token inválido", "error");
       router.push("/auth/login");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isValid, router]);
-
 
   if (isValid === null) {
     return <div>Loading...</div>;
-  }
-
-  else if(!newUser) {
+  } else if (!newUser) {
     return <div></div>;
   }
 
-  return (
-    <Form email={params.email} tenantId={params.tenantId}></Form>
-  );
+  return <Form email={params.email} tenantId={params.tenantId}></Form>;
 };
 
 export default Page;
 
-const Form = ({email, tenantId}:{email:string, tenantId:string}) => {
-  const [showPassword, setShowPassword] = useState<{ [key: string]: { show: boolean } }>({
+const Form = ({ email, tenantId }: { email: string; tenantId: string }) => {
+  const [showPassword, setShowPassword] = useState<{
+    [key: string]: { show: boolean };
+  }>({
     password: { show: false },
     confirmPassword: { show: false },
   });
@@ -100,20 +108,19 @@ const Form = ({email, tenantId}:{email:string, tenantId:string}) => {
 
   const onSubmit = async (data: CompleteRegistrationFormValues) => {
     try {
-      await services.authService.completeRegistration(data, {tenantId});
+      await services.authService.completeRegistration(data, { tenantId });
       router.push("/auth/login");
     } catch (error: any) {
       console.error("Error completing registration:", error);
     }
   };
 
-  const togglePasswordVisibility = (field: 'password' | 'confirmPassword') => {
+  const togglePasswordVisibility = (field: "password" | "confirmPassword") => {
     setShowPassword((prev) => ({
       ...prev,
       [field]: { show: !prev[field].show },
     }));
   };
-
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -168,7 +175,12 @@ const Form = ({email, tenantId}:{email:string, tenantId:string}) => {
                   className="grow"
                   {...register("password")}
                 />
-                <button type="button" onClick={() => { togglePasswordVisibility('password') }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    togglePasswordVisibility("password");
+                  }}
+                >
                   {showPassword.password.show ? (
                     <BsEyeSlash className="h-6 w-6 text-gray-400" />
                   ) : (
@@ -193,7 +205,12 @@ const Form = ({email, tenantId}:{email:string, tenantId:string}) => {
                   className="grow"
                   {...register("confirmPassword")}
                 />
-                <button type="button" onClick={() => { togglePasswordVisibility('confirmPassword') }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    togglePasswordVisibility("confirmPassword");
+                  }}
+                >
                   {showPassword.confirmPassword.show ? (
                     <BsEyeSlash className="h-6 w-6 text-gray-400" />
                   ) : (
@@ -264,10 +281,14 @@ const Form = ({email, tenantId}:{email:string, tenantId:string}) => {
               </label>
               <select
                 className="select select-bordered w-full"
-                onChange={(e) => setValue("timezone", (parseTimezone(e.currentTarget.value)))}
+                onChange={(e) =>
+                  setValue("timezone", parseTimezone(e.currentTarget.value))
+                }
               >
-                {options.map((option) => (
-                  <option value={option.value}>{option.label}</option>
+                {options.map((option, index) => (
+                  <option key={index} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
               </select>
               {errors.timezone && (
@@ -286,4 +307,4 @@ const Form = ({email, tenantId}:{email:string, tenantId:string}) => {
       </div>
     </div>
   );
-}
+};
