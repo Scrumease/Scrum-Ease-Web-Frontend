@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { BsEyeSlash, BsEye } from "react-icons/bs";
 import { useState } from "react";
 import { allTimezones, useTimezoneSelect } from "react-timezone-select";
+import { TIMEZONES } from "@/app/utils/timezone";
 
 const labelStyle = "original";
 const timezones = {
@@ -21,9 +22,6 @@ const registerSchema = z
     tenantIdentifier: z.string().min(1, { message: "CPF/CNPJ is required" }),
     adminName: z.string().min(1, { message: "Admin name is required" }),
     adminEmail: z.string().email({ message: "Invalid email address" }),
-    country: z.string().min(1, { message: "Country is required" }),
-    state: z.string().min(1, { message: "State is required" }),
-    city: z.string().min(1, { message: "City is required" }),
     timezone: z.object({ value: z.string(), offset: z.number().optional() }),
     password: z
       .string()
@@ -48,10 +46,15 @@ const Register = () => {
     password: { show: false },
     confirmPassword: { show: false },
   });
-  const { options, parseTimezone } = useTimezoneSelect({
-    labelStyle,
-    timezones,
-  });
+
+  const [options] = useState<{ label: string; value: number }[]>(
+    TIMEZONES.map((timezone, index) => {
+      return {
+        label: timezone.text,
+        value: index,
+      };
+    })
+  );
 
   const {
     register,
@@ -72,12 +75,23 @@ const Register = () => {
   const onSubmit = async (data: RegisterFormValues) => {
     try {
       await services.authService.register({ ...data });
-      addToast("Registration successful", "success");
+      addToast("Registrado com sucesso", "success");
       router.push("/auth/login");
     } catch (error: any) {
-      addToast("Error registering: " + error.response.data.message, "error");
+      addToast("Erro ao registrar: " + error.response.data.message, "error");
       console.error("Error registering:", error);
     }
+  };
+
+  const parseTimezone = (index: number | string) => {
+    if (typeof index === "string") {
+      index = parseInt(index);
+    }
+    const timezone = TIMEZONES[index];
+    return {
+      value: timezone.utc[0],
+      offset: timezone.offset,
+    };
   };
 
   return (
@@ -85,18 +99,20 @@ const Register = () => {
       <div className="card w-fit shadow-xl bg-base-100">
         <div className="card-body">
           <h1 className="card-title flex flex-row justify-center w-full">
-            Tenant Registration
+            Registrar organização
           </h1>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <h2 className="text-lg font-semibold mb-4">Tenant Details</h2>
+            <h2 className="text-lg font-semibold mb-4">
+              Detalhes da Organização
+            </h2>
             <div className="flex flex-col md:flex-row gap-4 w-full">
               <div className="form-control mb-4 w-full">
                 <label className="label">
-                  <span className="label-text">Tenant Name</span>
+                  <span className="label-text">Nome da Organização</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter the tenant name"
+                  placeholder="Digite o Nome da Organização"
                   className="input input-bordered w-full"
                   {...register("tenantName")}
                 />
@@ -112,7 +128,7 @@ const Register = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter the tenant's owner CPF/CNPJ"
+                  placeholder="xxx.xxx.xxx-xx"
                   className="input input-bordered w-full"
                   {...register("tenantIdentifier")}
                 />
@@ -124,16 +140,16 @@ const Register = () => {
               </div>
             </div>
             <h2 className="text-lg font-semibold mb-4">
-              Administrator Details
+              Detalhes do Administrador
             </h2>
             <div className="flex flex-col md:flex-row gap-4 w-full">
               <div className="form-control mb-4 w-full">
                 <label className="label">
-                  <span className="label-text">Admin Name</span>
+                  <span className="label-text">Nome do Administrador</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="Enter the admin's name"
+                  placeholder="Digite o Nome do Administrador"
                   className="input input-bordered w-full"
                   {...register("adminName")}
                 />
@@ -145,11 +161,11 @@ const Register = () => {
               </div>
               <div className="form-control mb-4 w-full">
                 <label className="label">
-                  <span className="label-text">Admin Email</span>
+                  <span className="label-text">Email do Administrador</span>
                 </label>
                 <input
                   type="email"
-                  placeholder="Enter the admin's email"
+                  placeholder="Digite o Email do Administrador"
                   className="input input-bordered w-full"
                   {...register("adminEmail")}
                 />
@@ -163,12 +179,12 @@ const Register = () => {
             <div className="flex flex-col md:flex-row gap-4 w-full">
               <div className="form-control mb-4 w-full">
                 <label className="label" htmlFor={"password"}>
-                  <span className="label-text">Password</span>
+                  <span className="label-text">Senha</span>
                 </label>
                 <div className="input input-bordered flex items-center gap-2">
                   <input
                     type={showPassword.password.show ? "text" : "password"}
-                    placeholder="Enter your password"
+                    placeholder="Digite sua Senha"
                     className="grow"
                     {...register("password")}
                   />
@@ -193,14 +209,14 @@ const Register = () => {
               </div>
               <div className="form-control mb-4 w-full">
                 <label className="label" htmlFor={"password"}>
-                  <span className="label-text">Confirm Password</span>
+                  <span className="label-text">Confirmar Senha</span>
                 </label>
                 <div className="input input-bordered flex items-center gap-2">
                   <input
                     type={
                       showPassword.confirmPassword.show ? "text" : "password"
                     }
-                    placeholder="Enter your password"
+                    placeholder="Confirme sua Senha"
                     className="grow"
                     {...register("confirmPassword")}
                   />
@@ -224,60 +240,13 @@ const Register = () => {
                 )}
               </div>
             </div>
-            <h2 className="text-lg font-semibold mb-4">Location Details</h2>
-            <div className="flex flex-col md:flex-row gap-4 w-full">
-              <div className="form-control mb-4 w-full">
-                <label className="label">
-                  <span className="label-text">Country</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter your country"
-                  className="input input-bordered w-full"
-                  {...register("country")}
-                />
-                {errors.country && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.country.message}
-                  </p>
-                )}
-              </div>
-              <div className="form-control mb-4 w-full">
-                <label className="label">
-                  <span className="label-text">State</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter your state"
-                  className="input input-bordered w-full"
-                  {...register("state")}
-                />
-                {errors.state && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.state.message}
-                  </p>
-                )}
-              </div>
-              <div className="form-control mb-4 w-full">
-                <label className="label">
-                  <span className="label-text">City</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter your city"
-                  className="input input-bordered w-full"
-                  {...register("city")}
-                />
-                {errors.city && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.city.message}
-                  </p>
-                )}
-              </div>
-            </div>
+            <h2 className="text-lg font-semibold mb-4">
+              Detalhes da Localização
+            </h2>
+
             <div className="form-control mb-4 w-full">
               <label className="label">
-                <span className="label-text">Timezone</span>
+                <span className="label-text">Fuso Horário</span>
               </label>
               <select
                 className="select select-bordered w-full"
@@ -299,7 +268,7 @@ const Register = () => {
             </div>
             <div className="form-control mt-4">
               <button className="btn btn-success text-white" type="submit">
-                Register
+                Registrar
               </button>
             </div>
             <div className="flex justify-end w-full mt-2">
@@ -307,7 +276,7 @@ const Register = () => {
                 className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                 href={"/auth/login"}
               >
-                Already have an account? Login
+                Já tem uma conta? Faça o login
               </Link>
             </div>
           </form>
