@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { useToast } from "../context/ToastContext";
 import { allTimezones, useTimezoneSelect } from "react-timezone-select";
+import { TIMEZONES } from "../utils/timezone";
 
 const labelStyle = "original";
 const timezones = {
@@ -92,11 +93,27 @@ const Form = ({ email, tenantId }: { email: string; tenantId: string }) => {
     confirmPassword: { show: false },
   });
   const router = useRouter();
-  const [organization, setOrganization] = useState<any>(null);
-  const { options, parseTimezone } = useTimezoneSelect({
-    labelStyle,
-    timezones,
-  });
+
+  const [options] = useState<{ label: string; value: number }[]>(
+    TIMEZONES.map((timezone, index) => {
+      return {
+        label: timezone.text,
+        value: index,
+      };
+    })
+  );
+
+  const parseTimezone = (index: number | string) => {
+    if (typeof index === "string") {
+      index = parseInt(index);
+    }
+    const timezone = TIMEZONES[index];
+    return {
+      value: timezone.utc[0],
+      offset: timezone.offset,
+    };
+  };
+
   const {
     register,
     handleSubmit,
@@ -123,8 +140,8 @@ const Form = ({ email, tenantId }: { email: string; tenantId: string }) => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="card w-fit shadow-xl">
+    <div className="flex items-center justify-center min-h-screen bg-base-200">
+      <div className="card w-fit shadow-xl bg-base-100">
         <div className="card-body">
           <h1 className="card-title flex flex-row justify-center w-full">
             Completar Registro
@@ -225,59 +242,9 @@ const Form = ({ email, tenantId }: { email: string; tenantId: string }) => {
               )}
             </div>
             <h2 className="text-lg font-semibold mb-4">Location Details</h2>
-            <div className="flex flex-col md:flex-row gap-4 w-full">
-              <div className="form-control mb-4 w-full">
-                <label className="label">
-                  <span className="label-text">Country</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter your country"
-                  className="input input-bordered w-full"
-                  {...register("country")}
-                />
-                {errors.country && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.country.message}
-                  </p>
-                )}
-              </div>
-              <div className="form-control mb-4 w-full">
-                <label className="label">
-                  <span className="label-text">State</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter your state"
-                  className="input input-bordered w-full"
-                  {...register("state")}
-                />
-                {errors.state && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.state.message}
-                  </p>
-                )}
-              </div>
-              <div className="form-control mb-4 w-full">
-                <label className="label">
-                  <span className="label-text">City</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter your city"
-                  className="input input-bordered w-full"
-                  {...register("city")}
-                />
-                {errors.city && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.city.message}
-                  </p>
-                )}
-              </div>
-            </div>
             <div className="form-control mb-4 w-full">
               <label className="label">
-                <span className="label-text">Timezone</span>
+                <span className="label-text">Fuso Horário</span>
               </label>
               <select
                 className="select select-bordered w-full"
