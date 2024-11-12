@@ -170,7 +170,7 @@ const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose }) => {
           className="input input-bordered"
           value={emailInput}
           onChange={handleInputChange}
-          placeholder="Digite endereçoo endereço de email."
+          placeholder="Digite o endereço de email."
         />
         {emailError && (
           <p className="text-red-500 text-xs mt-1">{emailError}</p>

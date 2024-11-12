@@ -4,9 +4,6 @@ export interface RegisterAdmin {
   adminName: string;
   adminEmail: string;
   password: string;
-  country: string;
-  state: string;
-  city: string;
   timezone: {
     value: string;
     offset?: number | undefined;
