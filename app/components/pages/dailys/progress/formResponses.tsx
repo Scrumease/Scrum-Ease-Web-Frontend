@@ -6,6 +6,8 @@ interface FormResponsesProps {
   responses: Array<any>;
 }
 
+//TODO: ajeitar carousel
+
 const FormResponses: React.FC<FormResponsesProps> = ({ responses }) => {
   const groupedResponses = responses.reduce((acc, response) => {
     const date = response.date;

@@ -143,9 +143,6 @@ export const QuestionCard = ({
                 {type.label}
               </option>
             ))}
-            {/* <option value="text">Texto</option>
-            <option value="yes/no">Sim/Não</option>
-            <option value="multiple choice">Escolha Múltipla</option> */}
           </select>
           {errors?.answerType && (
             <p className="text-red-500">{errors.answerType.message}</p>
@@ -285,7 +282,7 @@ export const QuestionCard = ({
                   `questions.${index}.advancedSettings.urgencyRecipients`
                 )}
                 defaultValue={mappedUsers.filter((u) =>
-                  question.advancedSettings.urgencyRecipients.includes(u.value)
+                  question.advancedSettings.urgencyRecipients?.includes(u.value)
                 )}
                 options={mappedUsers}
                 className="basic-multi-select"

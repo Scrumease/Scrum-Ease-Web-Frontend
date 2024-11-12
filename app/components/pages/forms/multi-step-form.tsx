@@ -15,19 +15,17 @@ const MultiStepForm = ({
   users = [],
 }: {
   handleSubmitForm: (form: FormSchema) => Promise<void>;
-  formDocument?: FormDocument;
+  formDocument?: Partial<FormDocument>;
   projects: ProjectDocument[];
   users: UserDocument[];
   isEdditing: boolean;
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<Partial<FormSchema>>(
-    {
-      ...formDocument,
-      projectId: (formDocument?.projectId as ProjectDocument)?._id as string,
-    }
-  );
+  const [formData, setFormData] = useState<Partial<FormSchema>>({
+    ...formDocument,
+    projectId: (formDocument?.projectId as ProjectDocument)?._id as string,
+  });
 
   const handleNextStep = (data: Partial<FormSchema>) => {
     setFormData((prevData) => ({

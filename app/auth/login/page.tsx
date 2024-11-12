@@ -42,7 +42,7 @@ const Login = () => {
       router.push("/");
     } catch (error: any) {
       addToast(
-        "Erro ao realizar login: " + error.response.data.message,
+        "Erro ao realizar login: " + error.response.data?.message,
         "error"
       );
       console.error("Error logging in:", error);

@@ -4,6 +4,7 @@ import MultiStepForm from "@/app/components/pages/forms/multi-step-form";
 import { FormSchema } from "@/app/components/pages/forms/schema";
 import { useToast } from "@/app/context/ToastContext";
 import { PermissionsEnum } from "@/app/enums/permissions.enum";
+import { FormDocument } from "@/app/interfaces/form/form.document";
 import { ProjectDocument } from "@/app/interfaces/project/project.document";
 import { UserDocument } from "@/app/interfaces/user/user.document";
 import { services } from "@/app/services/services";
@@ -79,6 +80,45 @@ const Page = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const formDocument: Partial<FormDocument> = {
+    questions: [
+      {
+        text: "O que você fez ontem?",
+        answerType: "text",
+        order: 1,
+        choices: [],
+        advancedSettings: {
+          urgencyRequired: false,
+          urgencyRecipients: [],
+          urgencyThreshold: 0,
+        },
+      },
+      {
+        text: "O que você fará hoje?",
+        answerType: "text",
+        order: 2,
+        choices: [],
+        advancedSettings: {
+          urgencyRequired: false,
+          urgencyRecipients: [],
+          urgencyThreshold: 0,
+        },
+      },
+      {
+        text: "Tem algum impedimento?",
+        answerType: "text",
+        order: 3,
+        choices: [],
+        advancedSettings: {
+          urgencyRequired: true,
+          urgencyRecipients: undefined as unknown as string[],
+          urgencyThreshold: 5,
+        },
+      },
+    ],
+    notifyDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+  };
+
   return (
     <>
       <Authorize props={props}>
@@ -88,6 +128,7 @@ const Page = () => {
             isEdditing={false}
             handleSubmitForm={formSubmittion}
             projects={projects}
+            formDocument={formDocument}
             users={users}
           />
         )}

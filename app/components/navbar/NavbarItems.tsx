@@ -63,7 +63,7 @@ const LogoutButton = () => {
       router.push("/auth/login");
     } catch (error: any) {
       addToast(
-        "Erro ao realizar login: " + error.response.data.message,
+        "Erro ao realizar logout: " + error.response.data.message,
         "error"
       );
     }
