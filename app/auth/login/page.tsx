@@ -42,7 +42,8 @@ const Login = () => {
       router.push("/");
     } catch (error: any) {
       addToast(
-        "Erro ao realizar login: " + error.response.data?.message,
+        "Erro ao realizar login: " +
+          (error.response?.data?.message ?? "Erro desconhecido"),
         "error"
       );
       console.error("Error logging in:", error);
@@ -95,6 +96,14 @@ const Login = () => {
                   {errors.password.message}
                 </p>
               )}
+            </div>
+            <div className="flex justify-end w-full pb-4">
+              <Link
+                className="text-sm text-blue-600 dark:text-blue-500 hover:underline"
+                href={"/auth/recovery"}
+              >
+                Esqueceu a senha?{" "}
+              </Link>
             </div>
             <div className="flex justify-end w-full">
               <Link

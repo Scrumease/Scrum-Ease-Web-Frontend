@@ -10,9 +10,31 @@ export interface AuthService {
   login: (dto: LoginInterface) => Promise<void>;
   register: (dto: RegisterAdmin) => Promise<void>;
   logout: () => Promise<void>;
-  checkInviteToken: (dto: CheckInviteToken) => Promise<{valid: boolean, newUser: boolean}>;
-  completeRegistration: (data: CompleteRegistrationFormValues, params: {tenantId: string}) => Promise<void>;
-  completeRegistrationRegisteredUser(params: {tenantId: string, email: string}): Promise<void>;
+  checkInviteToken: (
+    dto: CheckInviteToken
+  ) => Promise<{ valid: boolean; newUser: boolean }>;
+  completeRegistration: (
+    data: CompleteRegistrationFormValues,
+    params: { tenantId: string }
+  ) => Promise<void>;
+  completeRegistrationRegisteredUser(params: {
+    tenantId: string;
+    email: string;
+  }): Promise<void>;
+  updateToken(): Promise<void>;
+  changePassword: (data: {
+    oldPassword: string;
+    newPassword: string;
+  }) => Promise<void>;
+  forgotPassword: (data: { email: string }) => Promise<void>;
+  resetPassword: (
+    data: { password: string },
+    {
+      token,
+      email,
+      validity,
+    }: { token: string; email: string; validity: string }
+  ) => Promise<void>;
 }
 
 const basePath = "/auth";
@@ -24,6 +46,17 @@ export const authService: AuthService = {
       Cookies.set("accessToken", response.data.accessToken);
       Cookies.set("refreshToken", response.data.refreshToken);
       return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  updateToken: async () => {
+    try {
+      const response = await api.post(basePath + "/refresh", {
+        refreshToken: Cookies.get("refreshToken"),
+      });
+      Cookies.set("accessToken", response.data.accessToken);
+      Cookies.set("refreshToken", response.data.refreshToken);
     } catch (error) {
       throw error;
     }
@@ -53,22 +86,50 @@ export const authService: AuthService = {
   },
   checkInviteToken: async (dto) => {
     try {
-      const response = await api.post<{valid: boolean, newUser: boolean}>(basePath + "/verify-invite-token", { verifyDto: dto });
+      const response = await api.post<{ valid: boolean; newUser: boolean }>(
+        basePath + "/verify-invite-token",
+        { verifyDto: dto }
+      );
       return response.data;
     } catch (error) {
       throw error;
     }
   },
-  completeRegistration: async (data: CompleteRegistrationFormValues, params): Promise<void> => {
+  completeRegistration: async (
+    data: CompleteRegistrationFormValues,
+    params
+  ): Promise<void> => {
     try {
-      await api.post(basePath + `/register-by-invite/${params.tenantId}`, { ...data });
+      await api.post(basePath + `/register-by-invite/${params.tenantId}`, {
+        ...data,
+      });
     } catch (error) {
       throw error;
     }
   },
   completeRegistrationRegisteredUser: async (params): Promise<void> => {
     try {
-      await api.post(basePath + `/register-by-invite/${params.tenantId}/${params.email}`);
+      await api.post(
+        basePath + `/register-by-invite/${params.tenantId}/${params.email}`
+      );
+    } catch (error) {
+      throw error;
+    }
+  },
+  changePassword: async (data) => {
+    await api.post(basePath + "/change-password", { ...data });
+  },
+  forgotPassword: async (data) => {
+    await api.post(basePath + "/forgot-password", { ...data });
+  },
+  resetPassword: async (data, tokenInfos) => {
+    try {
+      await api.post(basePath + `/reset-password`, {
+        password: data.password,
+        token: tokenInfos.token,
+        email: tokenInfos.email,
+        validity: tokenInfos.validity,
+      });
     } catch (error) {
       throw error;
     }

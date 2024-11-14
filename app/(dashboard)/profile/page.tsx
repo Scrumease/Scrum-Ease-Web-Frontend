@@ -3,10 +3,16 @@ import Authorize from "@/app/components/Authorize";
 import ChangePasswordForm from "@/app/components/pages/profile/ChangePasswordForm";
 import OrganizationList from "@/app/components/pages/profile/OrganizationListComponent";
 import UserProfileForm from "@/app/components/pages/profile/UserProfileForm";
+import { useToast } from "@/app/context/ToastContext";
+import { FindAllTenantsResponseDto } from "@/app/interfaces/tenant/FindAllTenantsResponseDto";
+import { services } from "@/app/services/services";
 import { getUserInfoFromToken } from "@/app/utils/token";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 const UserProfile = () => {
+  const toast = useToast();
+  const [tenants, setTenants] = useState<FindAllTenantsResponseDto[]>([]);
+
   const userInfo = getUserInfoFromToken();
 
   const handleProfileSubmit = (data: any) => {
@@ -14,10 +20,26 @@ const UserProfile = () => {
     // Lógica para salvar as alterações do perfil
   };
 
-  const handlePasswordSubmit = (data: any) => {
-    console.log("Dados de troca de senha enviados: ", data);
-    // Lógica para trocar a senha
+  const handlePasswordSubmit = async (data: any) => {
+    try {
+      await services.authService.changePassword({ ...data });
+      toast("Senha alterada com sucesso", "success");
+    } catch (error) {
+      console.error("Erro ao alterar a senha: ", error);
+      toast("Erro ao alterar a senha", "error");
+    }
   };
+
+  const getTenants = useCallback(async () => {
+    try {
+      const tenants = await services.tenantService.findAll();
+      setTenants(tenants);
+    } catch (error) {}
+  }, []);
+
+  useEffect(() => {
+    getTenants();
+  }, [getTenants]);
 
   return (
     <Authorize props={{}}>
@@ -34,8 +56,8 @@ const UserProfile = () => {
           </div>
           <div>
             <OrganizationList
-              organizations={[]}
-              onViewDetails={(id: string) => console.log(id)}
+              refreshList={getTenants}
+              organizations={tenants}
               isLoading={false}
             />
           </div>

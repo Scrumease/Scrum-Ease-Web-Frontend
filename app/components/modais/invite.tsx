@@ -25,9 +25,13 @@ const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose }) => {
   const [selectedRole, setSelectedRole] = useState<string>("Usuário");
   const { hasPermission } = useAuth([PermissionsEnum.CREATE_ROLE]);
 
+  const [submitting, setSubmitting] = useState(false);
+
   const addToast = useToast();
 
   const handleInvite = async () => {
+    if (submitting) return;
+    setSubmitting(true);
     let emailsUpdated = [...emails];
     if (emailInput != null && emailInput != "") {
       setEmails([...emails, emailInput]);
@@ -50,6 +54,7 @@ const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose }) => {
       addToast("Erro ao convidar: " + error.response.data.message, "error");
     } finally {
       setEmailInput("");
+      setSubmitting(false);
     }
   };
 
@@ -193,15 +198,19 @@ const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose }) => {
         ))}
       </div>
       <div className="modal-action">
-        <button
-          className={`btn btn-primary ${
-            !isValidToSend ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-          onClick={handleInvite}
-          disabled={!isValidToSend}
-        >
-          Enviar convite(s)
-        </button>
+        {submitting ? (
+          <button className="btn btn-primary" disabled>
+            Enviando...
+          </button>
+        ) : (
+          <button
+            className={`btn btn-primary ${!isValidToSend ? "disabled" : ""}`}
+            onClick={handleInvite}
+            disabled={!isValidToSend}
+          >
+            Enviar convite(s)
+          </button>
+        )}
       </div>
     </Modal>
   );

@@ -20,6 +20,7 @@ const useAuth = (requiredPermissions: string[] = []) => {
 
     const hasPermission = () => {
       if (requiredPermissions.length === 0) return true;
+      if (!role || !role.permissions) return false;
       return role.permissions.some((permission) =>
         requiredPermissions.includes(permission)
       );
