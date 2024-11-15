@@ -5,19 +5,25 @@ import OrganizationList from "@/app/components/pages/profile/OrganizationListCom
 import UserProfileForm from "@/app/components/pages/profile/UserProfileForm";
 import { useToast } from "@/app/context/ToastContext";
 import { FindAllTenantsResponseDto } from "@/app/interfaces/tenant/FindAllTenantsResponseDto";
+import { UserDocument } from "@/app/interfaces/user/user.document";
 import { services } from "@/app/services/services";
-import { getUserInfoFromToken } from "@/app/utils/token";
 import React, { useCallback, useEffect, useState } from "react";
 
 const UserProfile = () => {
   const toast = useToast();
   const [tenants, setTenants] = useState<FindAllTenantsResponseDto[]>([]);
 
-  const userInfo = getUserInfoFromToken();
+  const [user, setUser] = useState<UserDocument>();
 
-  const handleProfileSubmit = (data: any) => {
-    console.log("Dados do perfil enviados: ", data);
-    // Lógica para salvar as alterações do perfil
+  const handleProfileSubmit = async (data: any) => {
+    try {
+      await services.userService.update({ ...data });
+      toast("Usuário atualizado com sucesso", "success");
+      await getMe();
+    } catch (error) {
+      console.error("Erro ao atualizar o usuário: ", error);
+      toast("Erro ao atualizar o usuário", "error");
+    }
   };
 
   const handlePasswordSubmit = async (data: any) => {
@@ -37,9 +43,32 @@ const UserProfile = () => {
     } catch (error) {}
   }, []);
 
+  const getMe = useCallback(async () => {
+    try {
+      const me = await services.userService.me();
+      setUser(me);
+    } catch (error) {
+      console.error("Erro ao buscar informações do usuário: ", error);
+    }
+  }, []);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  const initialRequest = useCallback(async () => {
+    Promise.all([getTenants(), getMe()]).then(() => setIsLoading(false));
+  }, [getTenants, getMe]);
+
   useEffect(() => {
-    getTenants();
-  }, [getTenants]);
+    initialRequest();
+  }, [initialRequest]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-base-200">
+        <div className="spinner border-b-2 border-gray-900 h-20 w-20"></div>
+      </div>
+    );
+  }
 
   return (
     <Authorize props={{}}>
@@ -48,8 +77,11 @@ const UserProfile = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex flex-col gap-4">
             <UserProfileForm
-              user={{ name: userInfo!.name, email: userInfo!.email }}
-              defaultValues={{ name: userInfo!.name }}
+              user={{ name: user!.name, email: user!.email }}
+              defaultValues={{
+                name: user?.name ?? "",
+                timezone: user?.timezone ?? { value: "UTC", offset: 0 },
+              }}
               onSubmit={handleProfileSubmit}
             />
             <ChangePasswordForm onSubmit={handlePasswordSubmit} />

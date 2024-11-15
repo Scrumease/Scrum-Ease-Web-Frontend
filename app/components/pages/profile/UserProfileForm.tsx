@@ -5,9 +5,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FaCopy } from "react-icons/fa";
 import { services } from "@/app/services/services";
+import { TIMEZONES } from "@/app/utils/timezone";
 
 const userProfileSchema = z.object({
   name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
+  timezone: z.object({ value: z.string(), offset: z.number().optional() }),
 });
 
 type UserProfileFormValues = z.infer<typeof userProfileSchema>;
@@ -29,13 +31,29 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
 
+  const initialTimezoneValues = () => {
+    return TIMEZONES.findIndex(
+      (timezone) =>
+        timezone.utc[0] === defaultValues.timezone.value &&
+        timezone.offset === defaultValues.timezone.offset
+    );
+  };
+
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
+    ...form
   } = useForm<UserProfileFormValues>({
     resolver: zodResolver(userProfileSchema),
-    defaultValues,
+    defaultValues: {
+      name: user.name,
+      timezone: {
+        value: TIMEZONES[initialTimezoneValues()]?.utc[0],
+        offset: TIMEZONES[initialTimezoneValues()]?.offset,
+      },
+    },
   });
 
   const copyToClipboard = async () => {
@@ -49,6 +67,26 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
         console.error("Erro ao copiar para a área de transferência: ", err);
       });
   };
+
+  const parseTimezone = (index: number | string) => {
+    if (typeof index === "string") {
+      index = parseInt(index);
+    }
+    const timezone = TIMEZONES[index];
+    return {
+      value: timezone.utc[0],
+      offset: timezone.offset,
+    };
+  };
+
+  const [options] = useState<{ label: string; value: number }[]>(
+    TIMEZONES.map((timezone, index) => {
+      return {
+        label: timezone.text,
+        value: index,
+      };
+    })
+  );
 
   return (
     <div className="card bg-base-100 shadow-xl p-4">
@@ -66,7 +104,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
             <FaCopy className="text-gray-500" />
           </button>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form>
           <div className="space-y-4">
             <div className="flex items-center">
               <label className="w-36 font-semibold">Email:</label>
@@ -92,15 +130,54 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({
                 <p className="text-red-500 mt-1">{errors.name.message}</p>
               )}
             </div>
+            <div className="form-control mb-4 w-full">
+              <label className="label">
+                <span className="label-text">Fuso Horário</span>
+              </label>
+              <select
+                className="select select-bordered w-full"
+                disabled={!isEditing}
+                defaultValue={initialTimezoneValues()}
+                onChange={(e) =>
+                  setValue("timezone", parseTimezone(e.currentTarget.value))
+                }
+              >
+                {options.map((option, index) => (
+                  <option key={index} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {errors.timezone && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.timezone.message}
+                </p>
+              )}
+            </div>
             <div className="flex justify-end space-x-2 mt-4">
               {isEditing ? (
                 <>
-                  <button type="submit" className="btn btn-primary">
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={async () => {
+                      await form.trigger();
+                      if (!errors.name && !errors.timezone) {
+                        onSubmit(form.getValues());
+                        setIsEditing(false);
+                      } else {
+                        console.log(errors);
+                      }
+                    }}
+                  >
                     Salvar
                   </button>
                   <button
                     type="button"
-                    onClick={() => setIsEditing(false)}
+                    onClick={() => {
+                      form.reset();
+                      setIsEditing(false);
+                    }}
                     className="btn btn-outline"
                   >
                     Cancelar
