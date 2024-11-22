@@ -28,6 +28,7 @@ const MultiStepForm = ({
   });
 
   const handleNextStep = (data: Partial<FormSchema>) => {
+    console.log(data);
     setFormData((prevData) => ({
       ...prevData,
       ...data,
@@ -40,6 +41,7 @@ const MultiStepForm = ({
   };
 
   const handleFinalSubmit = async () => {
+    console.log(formData);
     await handleSubmitForm(formData as FormSchema);
   };
 

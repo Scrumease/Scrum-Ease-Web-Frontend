@@ -54,34 +54,29 @@ const Step3 = ({
           <h3 className="font-semibold text-xl mb-4">
             Informações do Projeto:
           </h3>
-          <p>
-            <strong>Nome do Projeto:</strong>{" "}
-            {projects.find((p) => p._id === formData.projectId)?.name}
-          </p>
-          <p>
-            <strong>Dias da Notificação:</strong>{" "}
-            {daysOfWeek
-              .filter((d) => formData?.notifyDays?.includes(d.value as any))
-              .map((e) => e.label)
-              .join(", ") || "Nenhum dia selecionado"}
-          </p>
-          <p>
-            <strong>Horário da Notificação:</strong> {formData.notifyTime}
-          </p>
-          {/* <p>
-            <strong>Destinatários de Notificação:</strong>{" "}
-            {users
-              .filter((u) => (formData.notifyRecipients || []).includes(u._id))
-              .map((u) => u.name)
-              .join(", ") || "Nenhum destinatário"}
-          </p> */}
+          <div className="border-2 p-2 rounded mb-2">
+            <p>
+              <strong>Nome do Projeto:</strong>{" "}
+              {projects.find((p) => p._id === formData.projectId)?.name}
+            </p>
+            <p>
+              <strong>Dias da Notificação:</strong>{" "}
+              {daysOfWeek
+                .filter((d) => formData?.notifyDays?.includes(d.value as any))
+                .map((e) => e.label)
+                .join(", ") || "Nenhum dia selecionado"}
+            </p>
+            <p>
+              <strong>Horário da Notificação:</strong> {formData.notifyTime}
+            </p>
+          </div>
         </div>
         <div className="divider"></div>
 
         <div className="mt-4">
           <h3 className="font-semibold text-xl mb-4">Perguntas:</h3>
           {formData.questions?.map((question, index) => (
-            <div key={index} className="border p-2 rounded mb-2">
+            <div key={index} className="border-2 p-2 rounded mb-2">
               <p>
                 <strong>Pergunta:</strong> {question.text}
               </p>
@@ -121,6 +116,19 @@ const Step3 = ({
                       )
                       .map((u) => u.name)
                       .join(", ") || "Nenhum destinatário"}
+                  </p>
+                </>
+              )}
+              {question.dependencies?.questionTitle && (
+                <>
+                  <div className="divider">Dependência</div>
+                  <p className="text-sm">
+                    <strong>- Pergunta:</strong>{" "}
+                    {question.dependencies?.questionTitle || ""}
+                  </p>
+                  <p className="text-sm">
+                    <strong>- Resposta Esperada:</strong>{" "}
+                    {question.dependencies?.expectedAnswer || ""}
                   </p>
                 </>
               )}

@@ -4,16 +4,18 @@ import {
   Control,
   useFieldArray,
 } from "react-hook-form";
-import { Step2Schema } from "../schema";
+import { QuestionSchema, Step2Schema } from "../schema";
 import Select from "react-select";
 import { UserDocument } from "@/app/interfaces/user/user.document";
 import { selectStyle } from "@/app/components/ui/select.style";
 import { IoMdClose } from "react-icons/io";
 import { FaArrowDown, FaArrowUp, FaQuestionCircle } from "react-icons/fa";
 import { answerTypes } from "@/app/utils/constants/answerTypes";
+import { useEffect, useState } from "react";
+import { set } from "zod";
 
 interface QuestionCardProps {
-  question: any;
+  question: QuestionSchema;
   register: UseFormRegister<FieldValues & Step2Schema>;
   control: Control<Step2Schema>;
   index: number;
@@ -23,6 +25,7 @@ interface QuestionCardProps {
   users: UserDocument[];
   move: (from: number, to: number) => void;
   total: number;
+  questions: any[];
 }
 
 export const QuestionCard = ({
@@ -36,6 +39,7 @@ export const QuestionCard = ({
   users,
   move,
   total,
+  questions,
 }: QuestionCardProps) => {
   const mappedUsers = users.map((user) => ({
     label: user.name,
@@ -68,6 +72,24 @@ export const QuestionCard = ({
     control,
     name: `questions.${index}.choices`,
   });
+
+  const [selectedDependencies, setSelectedDependencies] = useState<
+    string | null
+  >();
+  const [dependencyQuestions, setDependencyQuestions] = useState<any[]>([]);
+  useEffect(() => {
+    const questionsToReturn = [{ label: "Nenhuma", value: undefined }];
+    questions.forEach((q) => {
+      if (q.text !== question.text && q.order == question.order - 1) {
+        questionsToReturn.push({
+          label: q.text,
+          value: q.text,
+        });
+      }
+    });
+    setDependencyQuestions(questionsToReturn);
+    setSelectedDependencies(question.dependencies?.questionTitle);
+  }, [questions]);
 
   return (
     <div className="p-4 card bg-base-100 shadow-md rounded-lg space-y-4">
@@ -287,10 +309,13 @@ export const QuestionCard = ({
                 options={mappedUsers}
                 className="basic-multi-select"
                 classNamePrefix="select"
-                onChange={(e) =>
+                onChange={(selectedOptions) =>
                   setSelectValue(
                     `questions.${index}.advancedSettings.urgencyRecipients`,
-                    e as { label: string; value: string }[]
+                    selectedOptions.map((option) => ({
+                      label: option.label,
+                      value: option.value,
+                    }))
                   )
                 }
                 styles={selectStyle}
@@ -298,6 +323,52 @@ export const QuestionCard = ({
             </div>
           </>
         )}
+        <div className="mt-2">
+          <label className="block font-semibold">Dependência:</label>
+          <div className="flex gap-4">
+            <div className="w-full">
+              <label className="block">Questão Dependente:</label>
+              <Select
+                options={dependencyQuestions}
+                styles={selectStyle}
+                defaultValue={{
+                  label: question.dependencies?.questionTitle || "Nenhuma",
+                  value: question.dependencies?.questionTitle || undefined,
+                }}
+                onChange={(e) => {
+                  if (e?.value) {
+                    form.setValue(
+                      `questions.${index}.dependencies.questionTitle`,
+                      e?.value || null
+                    );
+                  } else {
+                    form.setValue(`questions.${index}.dependencies`, undefined);
+                  }
+                  form.trigger(`questions.${index}.dependencies`);
+                }}
+              />
+              {errors?.dependencies?.questionTitle && (
+                <p className="text-red-500">
+                  {errors.dependencies.questionTitle.message}
+                </p>
+              )}
+            </div>
+            <div className="w-full">
+              <label className="block">Resposta Esperada:</label>
+              <input
+                type="text"
+                {...register(`questions.${index}.dependencies.expectedAnswer`)}
+                className="input input-bordered w-full"
+                placeholder="Resposta esperada"
+              />
+              {errors?.dependencies?.expectedAnswer && (
+                <p className="text-red-500">
+                  {errors.dependencies.expectedAnswer.message}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

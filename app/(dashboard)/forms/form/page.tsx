@@ -36,6 +36,7 @@ const Page = () => {
             urgencyThreshold: question.advancedSettings
               .urgencyThreshold as number,
           },
+          dependencies: question.dependencies,
         });
       });
       await services.formService.create({

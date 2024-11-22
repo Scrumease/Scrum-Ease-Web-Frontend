@@ -126,12 +126,12 @@ const DailyForm: React.FC<DailyFormProps> = ({
                   handleAnswerChange(
                     question.order,
                     "answer",
-                    e.target.value === "yes"
+                    e.target.value === "sim"
                   )
                 }
               >
-                <option value="yes">Sim</option>
-                <option value="no">Não</option>
+                <option value="sim">Sim</option>
+                <option value="não">Não</option>
               </select>
             )}
             {question.answerType === "multiple choice" && (

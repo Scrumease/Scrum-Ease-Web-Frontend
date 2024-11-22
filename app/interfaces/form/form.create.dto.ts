@@ -10,6 +10,10 @@ interface QuestionDto {
   order: number;
   choices?: string[];
   advancedSettings: AdvancedSettingsDto;
+  dependencies?: {
+    questionTitle?: string | null;
+    expectedAnswer?: string | null;
+  };
 }
 
 type CreateFormDto = {

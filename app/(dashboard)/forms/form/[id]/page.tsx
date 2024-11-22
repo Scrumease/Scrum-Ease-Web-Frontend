@@ -37,6 +37,7 @@ const Page = ({ params }: { params: { id: string } }) => {
             urgencyThreshold: question.advancedSettings
               .urgencyThreshold as number,
           },
+          dependencies: question.dependencies,
         });
       });
       await services.formService.update(params.id, {

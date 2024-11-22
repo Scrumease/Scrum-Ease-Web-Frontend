@@ -21,6 +21,7 @@ const Step2 = ({
     control,
     handleSubmit,
     formState: { errors },
+    watch,
     ...form
   } = useForm<Step2Schema>({
     defaultValues: { questions: [], ...formDocument },
@@ -33,10 +34,6 @@ const Step2 = ({
     name: "questions",
   });
 
-  const onSubmit: SubmitHandler<Step2Schema> = (data) => {
-    handleNextStep(data);
-  };
-
   const addQuestion = () => {
     append({
       text: "",
@@ -48,8 +45,17 @@ const Step2 = ({
         urgencyRecipients: [],
         urgencyThreshold: 0,
       },
+      dependencies: {
+        questionTitle: undefined,
+        expectedAnswer: undefined,
+      },
     });
   };
+
+  const onSubmit: SubmitHandler<Step2Schema> = (data) => {
+    handleNextStep(data);
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex justify-between w-full items-center mb-8">
@@ -73,6 +79,7 @@ const Step2 = ({
       <div className="space-y-4">
         {fields.map((field, index) => (
           <QuestionCard
+            questions={fields}
             control={control}
             key={field.id}
             question={field}

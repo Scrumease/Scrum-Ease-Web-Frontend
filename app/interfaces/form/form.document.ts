@@ -18,6 +18,10 @@ type QuestionDocument = {
   order: number;
   choices?: string[];
   advancedSettings: AdvancedSettingsDocument;
+  dependencies?: {
+    questionTitle: string;
+    expectedAnswer: string;
+  };
 };
 
 type AdvancedSettingsDocument = {

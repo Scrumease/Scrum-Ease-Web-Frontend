@@ -31,7 +31,24 @@ const questionSchema = z.object({
     .array(z.string().min(1, "A opção não pode estar vazia"))
     .optional(),
   advancedSettings: advancedSettingsSchema,
+  dependencies: z
+    .object({
+      questionTitle: z.string().optional().nullable(),
+      expectedAnswer: z.string().optional().nullable(),
+    })
+    .optional()
+    .refine(
+      (val) => {
+        if (val && val.questionTitle) {
+          return val.questionTitle.trim().length > 0;
+        }
+        return true;
+      },
+      { message: "A pergunta de dependência não pode estar vazia" }
+    ),
 });
+
+export type QuestionSchema = z.infer<typeof questionSchema>;
 
 export const formSchema = z.object({
   projectId: z.string().min(1, "ID de projeto inválido"),
@@ -96,6 +113,32 @@ export type Step1Schema = z.infer<typeof step1Schema>;
 export const step2Schema = z.object({
   questions: z
     .array(questionSchema)
-    .min(1, { message: "Pelo menos uma pergunta é necessária" }),
+    .min(1, { message: "Pelo menos uma pergunta é necessária" })
+    .refine(
+      (questions) => {
+        // Verifica se todas as dependências estão configuradas corretamente
+        return questions.every((question, index) => {
+          if (question.dependencies && question.dependencies.questionTitle) {
+            // Verifica se a pergunta de dependência existe dentro das questões
+            const dependentQuestion = questions.find(
+              (q) => q.text === question.dependencies?.questionTitle
+            );
+            if (!dependentQuestion) {
+              return false; // Se a pergunta de dependência não for encontrada
+            }
+
+            // A resposta esperada é uma string, então apenas garantimos que ela não seja vazia
+            if (question.dependencies?.expectedAnswer?.trim().length === 0) {
+              return false; // Se a resposta esperada for uma string vazia
+            }
+          }
+          return true;
+        });
+      },
+      {
+        message:
+          "Algumas dependências estão configuradas incorretamente ou as perguntas dependentes não existem",
+      }
+    ),
 });
 export type Step2Schema = z.infer<typeof step2Schema>;
