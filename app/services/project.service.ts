@@ -2,6 +2,7 @@ import api from "./client";
 import { FindPaginated } from "../interfaces/common/findPaginated";
 import { FilterInterface } from "../interfaces/common/filter";
 import { ProjectInterface } from "../interfaces/project/project.interface";
+import { ProjectCountByUser } from "../interfaces/project/projectCountByUser.interface";
 
 export interface ProjectService {
   create: (dto: { name: string; users: string[] }) => Promise<void>;
@@ -9,6 +10,7 @@ export interface ProjectService {
   getAll: (filter: FilterInterface) => Promise<FindPaginated<ProjectInterface>>;
   toggleActive: (id: string) => Promise<void>;
   getProjectById: (id: string) => Promise<ProjectInterface>;
+  getProjectCountByUser: () => Promise<ProjectCountByUser[]>;
 }
 
 const basePath = "/project";
@@ -50,5 +52,9 @@ export const projectService: ProjectService = {
     } catch (error) {
       throw error;
     }
+  },
+  getProjectCountByUser: async () => {
+    const response = await api.get(basePath + "/count-by-user");
+    return response.data;
   },
 };
