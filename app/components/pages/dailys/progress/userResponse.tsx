@@ -7,10 +7,17 @@ interface UserResponseProps {
 
 const UserResponse: React.FC<UserResponseProps> = ({ question, response }) => {
   const RenderResponse = () => {
-    console.log("question", question, "response", response);
     switch (question.answerType) {
       case "text":
-        return <p>R: {response.answer}</p>;
+        return (
+          <div>
+            {response.answer.split("\n").map((line: string, index: number) => (
+              <p key={index}>
+                {index == 0 && "R:"} {line}
+              </p>
+            ))}
+          </div>
+        );
       case "yes/no":
         return <p>R: {response.answer ? "Sim" : "Não"}</p>;
       case "multi":

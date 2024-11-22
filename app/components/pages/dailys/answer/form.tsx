@@ -19,7 +19,12 @@ const DailyForm: React.FC<DailyFormProps> = ({
     formResponses: formSnapshot.questions.map((q) => ({
       orderQuestion: q.order,
       textQuestion: q.text,
-      answer: q.answerType === "multiple choice" ? [] : "",
+      answer:
+        q.answerType === "multiple choice"
+          ? []
+          : q.answerType === "text"
+          ? ""
+          : "sim",
       urgencyThreshold: q.advancedSettings?.urgencyThreshold || 0,
     })),
   });
@@ -37,9 +42,10 @@ const DailyForm: React.FC<DailyFormProps> = ({
   };
 
   const handleSubmit = () => {
-    const parsed = formResponseSchema.safeParse(formResponses);
+    debugger;
+    const parsed = formResponseSchema.parse(formResponses);
     let errosFlag = 0;
-    parsed.data?.formResponses.forEach((a) => {
+    parsed?.formResponses.forEach((a) => {
       if (
         a.answer === "" ||
         a.answer === undefined ||
@@ -61,10 +67,10 @@ const DailyForm: React.FC<DailyFormProps> = ({
       toast("Preencha todas as respostas e configurações avançadas", "error");
       return;
     }
-    if (parsed.success) {
-      onSubmit(parsed.data);
+    if (parsed) {
+      onSubmit(parsed);
     } else {
-      console.error(parsed.error);
+      console.error(parsed);
     }
   };
 
@@ -101,9 +107,9 @@ const DailyForm: React.FC<DailyFormProps> = ({
               )}
             </label>
             {question.answerType === "text" && (
-              <input
-                type="text"
-                className="input input-bordered w-full"
+              <textarea
+                rows={4}
+                className="textarea textarea-bordered w-full"
                 value={
                   (formResponses.formResponses.find(
                     (response) => response.orderQuestion === question.order
@@ -126,12 +132,12 @@ const DailyForm: React.FC<DailyFormProps> = ({
                   handleAnswerChange(
                     question.order,
                     "answer",
-                    e.target.value === "yes"
+                    e.target.value === "sim"
                   )
                 }
               >
-                <option value="yes">Sim</option>
-                <option value="no">Não</option>
+                <option value="sim">Sim</option>
+                <option value="não">Não</option>
               </select>
             )}
             {question.answerType === "multiple choice" && (
