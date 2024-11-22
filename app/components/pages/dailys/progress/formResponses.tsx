@@ -6,8 +6,6 @@ interface FormResponsesProps {
   responses: Array<any>;
 }
 
-//TODO: ajeitar carousel
-
 const FormResponses: React.FC<FormResponsesProps> = ({ responses }) => {
   const groupedResponses = responses.reduce((acc, response) => {
     const date = response.date;
@@ -19,32 +17,18 @@ const FormResponses: React.FC<FormResponsesProps> = ({ responses }) => {
   }, {} as Record<string, DailyDocument[]>);
 
   return (
-    <div className="max-w-5xl mx-auto p-4">
+    <div className="w-full mx-auto p-4">
       {Object.entries<DailyDocument[]>(groupedResponses).map(
         ([date, dailyResponses]) => (
           <div key={date} className="mb-8">
             <h2 className="text-xl font-semibold mb-4">{date}</h2>{" "}
-            <div className="carousel carousel-center rounded-box max-w-full space-x-4 overflow-visible p-4">
-              {dailyResponses.slice(0, 4).map((response, index) => (
-                <div key={index} className="carousel-item w-80">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
+              {dailyResponses.map((response, index) => (
+                <div key={index} className="w-full">
                   <DailyResponseCard response={response} />
                 </div>
               ))}
             </div>
-            {dailyResponses.length > 4 && (
-              <>
-                <div className="absolute top-1/2 transform -translate-y-1/2 left-2">
-                  <a href="#prev" className="btn btn-circle">
-                    ❮
-                  </a>
-                </div>
-                <div className="absolute top-1/2 transform -translate-y-1/2 right-2">
-                  <a href="#next" className="btn btn-circle">
-                    ❯
-                  </a>
-                </div>
-              </>
-            )}
           </div>
         )
       )}
