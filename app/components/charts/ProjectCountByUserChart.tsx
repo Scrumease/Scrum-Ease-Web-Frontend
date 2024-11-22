@@ -21,7 +21,10 @@ const ProjectCountByUserChart = () => {
   }, []);
 
   const chartData = {
-    labels: projectData?.map((item) => item.userName),
+    labels: projectData?.map((item) => {
+      const nameParts = item.userName.split(" ");
+      return nameParts.slice(0, 2).join(" ");
+    }),
     datasets: [
       {
         label: "Total de Projetos",
