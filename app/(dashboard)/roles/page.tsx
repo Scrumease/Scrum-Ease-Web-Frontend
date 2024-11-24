@@ -10,12 +10,13 @@ import {
 } from "@/app/components/table/interface";
 import { services } from "@/app/services/services";
 import Filters from "./filters";
-import { BsEye } from "react-icons/bs";
+import { BsEye, BsPencil, BsPencilFill } from "react-icons/bs";
 import { Role } from "@/app/interfaces/role/role.interface";
 import { z } from "zod";
 import useAuth from "@/app/hooks/useAuth";
 import CreateEditModal from "@/app/components/modais/createEdit";
 import { PermissionsEnum } from "@/app/enums/permissions.enum";
+import { RoleDocument } from "@/app/interfaces/role/role.document";
 
 const Page = () => {
   const props = {
@@ -33,7 +34,7 @@ const Page = () => {
 const Table = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [data, setData] = useState<Role[]>([]);
+  const [data, setData] = useState<RoleDocument[]>([]);
 
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -53,13 +54,8 @@ const Table = () => {
 
   const actionButtons: ActionButton<Role>[] = [
     {
-      label: "Detalhes",
-      onClick: (row) => console.log("Detalhes:", row),
-      icon: <BsEye />,
-      show: () => true,
-    },
-    {
       label: "Editar",
+      icon: <BsPencilFill />,
       onClick: (row) => handleEdit(row),
       show: () => updatePermission.hasPermission,
     },
@@ -312,7 +308,10 @@ const CreateRoleModal = ({
 
   const handleSubmit = async (values: Record<string, any>) => {
     try {
-      const permissions = Object.keys(values).filter((key) => values[key]);
+      const { roleName, ...permissionsValues } = values;
+      const permissions = Object.keys(permissionsValues).filter(
+        (key) => values[key]
+      );
       await services.roleService.createRole({
         permissions,
         name: values.roleName,
