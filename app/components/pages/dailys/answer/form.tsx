@@ -42,7 +42,6 @@ const DailyForm: React.FC<DailyFormProps> = ({
   };
 
   const handleSubmit = () => {
-    debugger;
     const parsed = formResponseSchema.parse(formResponses);
     let errosFlag = 0;
     parsed?.formResponses.forEach((a) => {
