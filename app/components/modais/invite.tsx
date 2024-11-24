@@ -5,9 +5,9 @@ import { FaInfoCircle } from "react-icons/fa";
 import { z } from "zod";
 import { services } from "@/app/services/services";
 import { useToast } from "@/app/context/ToastContext";
-import { Role } from "@/app/interfaces/role/role.interface";
 import useAuth from "@/app/hooks/useAuth";
 import { PermissionsEnum } from "@/app/enums/permissions.enum";
+import { RoleDocument } from "@/app/interfaces/role/role.document";
 
 const emailSchema = z.string().email();
 
@@ -21,7 +21,7 @@ const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose }) => {
   const [emailInput, setEmailInput] = useState<string>("");
   const [emailError, setEmailError] = useState<string>("");
   const [isValidToSend, setIsValidToSend] = useState<boolean>(false);
-  const [roles, setRoles] = useState<Role[]>([]);
+  const [roles, setRoles] = useState<RoleDocument[]>([]);
   const [selectedRole, setSelectedRole] = useState<string>("Usuário");
   const { hasPermission } = useAuth([PermissionsEnum.CREATE_ROLE]);
 
