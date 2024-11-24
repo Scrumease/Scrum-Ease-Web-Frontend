@@ -12,6 +12,7 @@ import Select from "react-select";
 import Authorize from "@/app/components/Authorize";
 import { PermissionsEnum } from "@/app/enums/permissions.enum";
 import { selectStyle } from "@/app/components/ui/select.style";
+import { UserDocument } from "@/app/interfaces/user/user.document";
 
 const projectSchema = z.object({
   name: z.string().min(1, "O nome do projeto é obrigatório"),
@@ -45,7 +46,7 @@ const Form = ({ params }: { params: { id: string } }) => {
     resolver: zodResolver(projectSchema),
   });
 
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserDocument[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
