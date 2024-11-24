@@ -48,24 +48,26 @@ const SeeUserRoleModal: React.FC<SeeUserRoleModalProps> = ({
   };
 
   const groupPermissions = (permissions: string[]) => {
-    const grouped = Object.keys(PermissionsEnum).reduce((acc, key) => {
-      const category = key.split("_")[0];
-      if (!acc[category]) acc[category] = [];
-      const permissionValue =
-        PermissionsEnum[key as keyof typeof PermissionsEnum];
-      if (permissions.includes(permissionValue)) {
-        acc[category].push(permissionTranslations[key]);
+    const grouped = permissions.reduce((acc, permissionValue) => {
+      const permissionKey = Object.entries(PermissionsEnum).find(
+        ([, value]) => value === permissionValue
+      )?.[0];
+
+      if (permissionKey) {
+        const category = permissionKey.split("_")[0];
+        if (!acc[category]) acc[category] = [];
+        acc[category].push(permissionTranslations[permissionKey]);
       }
+
       return acc;
     }, {} as Record<string, string[]>);
+
     return grouped;
   };
 
-  const permissionsAsStrings = Object.entries(PermissionsEnum).map(
-    ([key, value]) => value
+  const groupedPermissions = groupPermissions(
+    userRole.role.permissions as unknown as string[]
   );
-
-  const groupedPermissions = groupPermissions(permissionsAsStrings);
 
   return (
     <Modal
