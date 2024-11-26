@@ -6,6 +6,7 @@ import Authorize from "@/app/components/Authorize";
 import Select from "react-select";
 import { selectStyle } from "@/app/components/ui/select.style";
 import { ProjectDocument } from "@/app/interfaces/project/project.document";
+import { FormDocument } from "@/app/interfaces/form/form.document";
 
 const FormResponsesPage = ({ params }: { params: { formId: string } }) => {
   const { formId } = params;
@@ -47,6 +48,8 @@ const FormResponsesPage = ({ params }: { params: { formId: string } }) => {
     { _id: string; name: string; email: string }[]
   >([]);
 
+  const [form, setForm] = useState<FormDocument>();
+
   const fetchUsers = async () => {
     try {
       const data = await services.formService.findOne(formId);
@@ -57,6 +60,7 @@ const FormResponsesPage = ({ params }: { params: { formId: string } }) => {
           email: string;
         }[]
       );
+      setForm(data);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -75,10 +79,21 @@ const FormResponsesPage = ({ params }: { params: { formId: string } }) => {
     }
   };
 
+  const Title = () => {
+    if (form) {
+      return `Respostas do formulário - ${
+        (form.projectId as ProjectDocument).name
+      }`;
+    }
+    return "Respostas do formulário";
+  };
+
   return (
     <Authorize props={{}}>
       <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-6">Respostas do Formulário</h1>
+        <h1 className="text-2xl font-bold mb-6">
+          <Title />
+        </h1>
 
         <div className="flex space-x-4 mb-4 items-end">
           <div className="flex flex-col gap-4">
