@@ -99,7 +99,7 @@ const ExportCsvModal: React.FC<ExportCsvModalProps> = ({
 
         <div className="mt-4">
           <h4 className="text-md font-medium">Selecione os Usuários</h4>
-          <div className="mt-2 grid grid-cols-2 gap-2">
+          <div className="mt-2 flex flex-col gap-2">
             {users.map((user) => (
               <label key={user._id} className="flex items-center">
                 <input

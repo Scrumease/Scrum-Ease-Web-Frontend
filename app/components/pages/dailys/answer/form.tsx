@@ -128,11 +128,7 @@ const DailyForm: React.FC<DailyFormProps> = ({
                   )?.answer || "") as any
                 }
                 onChange={(e) =>
-                  handleAnswerChange(
-                    question.order,
-                    "answer",
-                    e.target.value === "sim"
-                  )
+                  handleAnswerChange(question.order, "answer", e.target.value)
                 }
               >
                 <option value="sim">Sim</option>
