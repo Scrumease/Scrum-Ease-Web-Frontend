@@ -16,6 +16,12 @@ export interface DailyService {
       endDate,
     }: { filterUserId?: string; startDate?: string; endDate?: string }
   ) => Promise<any>;
+  exportToCsv: (
+    formId: string,
+    startDate: string,
+    endDate: string,
+    userIds: string[]
+  ) => Promise<any>;
 }
 
 const basePath = "/daily";
@@ -54,5 +60,16 @@ export const dailyService: DailyService = {
         endDate,
       },
     });
+  },
+  exportToCsv: async (
+    formId: string,
+    startDate: string,
+    endDate: string,
+    userIds: string[]
+  ) => {
+    return await api.post(
+      `${basePath}/export/csv?formId=${formId}&startDate=${startDate}&endDate=${endDate}`,
+      { userIds }
+    );
   },
 };
