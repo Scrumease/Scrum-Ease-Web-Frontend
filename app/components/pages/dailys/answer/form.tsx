@@ -3,17 +3,20 @@ import { FormResponse, formResponseSchema } from "./schema";
 import { useState } from "react";
 import { useToast } from "@/app/context/ToastContext";
 import { Responses } from "@/app/interfaces/daily/daily.document";
+import { ProjectDocument } from "@/app/interfaces/project/project.document";
 
 interface DailyFormProps {
   formSnapshot: FormDocument;
   yesterdayResponse?: Responses[];
   onSubmit: (data: FormResponse) => void;
+  project: ProjectDocument;
 }
 
 const DailyForm: React.FC<DailyFormProps> = ({
   formSnapshot,
   onSubmit,
   yesterdayResponse,
+  project,
 }) => {
   const [formResponses, setFormResponses] = useState<FormResponse>({
     formResponses: formSnapshot.questions.map((q) => ({
@@ -75,7 +78,9 @@ const DailyForm: React.FC<DailyFormProps> = ({
 
   return (
     <div className="card-body">
-      <h1 className="card-title text-2xl font-bold mb-6">Responda à Daily</h1>
+      <h1 className="card-title text-2xl font-bold mb-6">
+        Responda à Daily - {project.name}
+      </h1>
       <form
         onSubmit={(e) => {
           e.preventDefault();

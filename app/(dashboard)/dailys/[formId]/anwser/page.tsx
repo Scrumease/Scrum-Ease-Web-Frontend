@@ -4,6 +4,7 @@ import { FormResponse } from "@/app/components/pages/dailys/answer/schema";
 import { useToast } from "@/app/context/ToastContext";
 import { ResponseDaily } from "@/app/interfaces/daily/anwser.dto";
 import { DailyDocument } from "@/app/interfaces/daily/daily.document";
+import { ProjectDocument } from "@/app/interfaces/project/project.document";
 import { services } from "@/app/services/services";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -13,6 +14,7 @@ const Page = ({ params }: { params: { formId: string } }) => {
   const [daily, setDaily] = React.useState<{
     today: DailyDocument;
     yesterday: DailyDocument;
+    project: ProjectDocument;
   }>();
 
   const toast = useToast();

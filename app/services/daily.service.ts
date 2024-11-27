@@ -1,5 +1,6 @@
 import { AnwserDailyDto } from "../interfaces/daily/anwser.dto";
 import { DailyDocument } from "../interfaces/daily/daily.document";
+import { ProjectDocument } from "../interfaces/project/project.document";
 import api from "./client";
 
 export interface DailyService {
@@ -7,7 +8,11 @@ export interface DailyService {
   getEntries: (userId: string, days: number) => Promise<any>;
   checkOrCreateDaily: (
     formId: string
-  ) => Promise<{ today: DailyDocument; yesterday: DailyDocument }>;
+  ) => Promise<{
+    today: DailyDocument;
+    yesterday: DailyDocument;
+    project: ProjectDocument;
+  }>;
   getResponses: (
     formId: string,
     {

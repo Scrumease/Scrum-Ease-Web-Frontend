@@ -7,6 +7,7 @@ import Select from "react-select";
 import { selectStyle } from "@/app/components/ui/select.style";
 import { ProjectDocument } from "@/app/interfaces/project/project.document";
 import ExportCsvModal from "@/app/components/modais/daily/exportCsvDaily";
+import { FormDocument } from "@/app/interfaces/form/form.document";
 
 const FormResponsesPage = ({ params }: { params: { formId: string } }) => {
   const { formId } = params;
@@ -48,6 +49,8 @@ const FormResponsesPage = ({ params }: { params: { formId: string } }) => {
     { _id: string; name: string; email: string }[]
   >([]);
 
+  const [form, setForm] = useState<FormDocument>();
+
   const fetchUsers = async () => {
     try {
       const data = await services.formService.findOne(formId);
@@ -58,6 +61,7 @@ const FormResponsesPage = ({ params }: { params: { formId: string } }) => {
           email: string;
         }[]
       );
+      setForm(data);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -109,10 +113,21 @@ const FormResponsesPage = ({ params }: { params: { formId: string } }) => {
     document.body.removeChild(link);
   };
 
+  const Title = () => {
+    if (form) {
+      return `Respostas do formulário - ${
+        (form.projectId as ProjectDocument).name
+      }`;
+    }
+    return "Respostas do formulário";
+  };
+
   return (
     <Authorize props={{}}>
       <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-6">Respostas do Formulário</h1>
+        <h1 className="text-2xl font-bold mb-6">
+          <Title />
+        </h1>
 
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body flex-row items-center">
