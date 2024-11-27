@@ -6,6 +6,7 @@ import Authorize from "@/app/components/Authorize";
 import Select from "react-select";
 import { selectStyle } from "@/app/components/ui/select.style";
 import { ProjectDocument } from "@/app/interfaces/project/project.document";
+import ExportCsvModal from "@/app/components/modais/daily/exportCsvDaily";
 import { FormDocument } from "@/app/interfaces/form/form.document";
 
 const FormResponsesPage = ({ params }: { params: { formId: string } }) => {
@@ -79,6 +80,38 @@ const FormResponsesPage = ({ params }: { params: { formId: string } }) => {
     }
   };
 
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const handleExportCsv = async (data: {
+    startDate: string;
+    endDate: string;
+    userIds: string[];
+  }) => {
+    try {
+      const csv = await services.dailyService.exportToCsv(
+        formId,
+        data.startDate,
+        data.endDate,
+        data.userIds
+      );
+      createFile(csv.data);
+    } catch (error) {
+      console.error("Error exporting to CSV:", error);
+    }
+  };
+
+  const createFile = (csv: string) => {
+    const url = window.URL.createObjectURL(
+      new Blob([csv], { type: "text/csv" })
+    );
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "respostas.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const Title = () => {
     if (form) {
       return `Respostas do formulário - ${
@@ -95,52 +128,66 @@ const FormResponsesPage = ({ params }: { params: { formId: string } }) => {
           <Title />
         </h1>
 
-        <div className="flex space-x-4 mb-4 items-end">
-          <div className="flex flex-col gap-4">
-            <label htmlFor="useId" className="text-md ">
-              Usuário
-            </label>
-            {users.length > 0 && (
-              <Select
-                isClearable
-                placeholder="Selecione um usuário"
-                name="useId"
-                options={users.map((user) => ({
-                  value: user._id,
-                  label: user.name,
-                }))}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                onChange={(e) => setFilterUserId(e?.value ?? "")}
-                styles={selectStyle}
-              />
-            )}
-          </div>
-          <div className="flex flex-col gap-4">
-            <label htmlFor="initialDate" className="text-md ">
-              Data Inicial
-            </label>
-            <input
-              type="date"
-              name="initialDate"
-              className="input input-bordered"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
-          </div>
-          <div className="flex flex-col gap-4">
-            <label htmlFor="endDate" className="text-md ">
-              Data Final
-            </label>
-            <input
-              type="date"
-              name="endDate"
-              className="input input-bordered"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body flex-row items-center">
+            <div className="flex space-x-4 mb-4 items-end">
+              <div className="flex flex-col gap-4">
+                <label htmlFor="useId" className="text-md ">
+                  Usuário
+                </label>
+                {users.length > 0 && (
+                  <Select
+                    isClearable
+                    placeholder="Selecione um usuário"
+                    name="useId"
+                    options={users.map((user) => ({
+                      value: user._id,
+                      label: user.name,
+                    }))}
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                    onChange={(e) => setFilterUserId(e?.value ?? "")}
+                    styles={selectStyle}
+                  />
+                )}
+              </div>
+              <div className="flex flex-col gap-4">
+                <label htmlFor="initialDate" className="text-md ">
+                  Data Inicial
+                </label>
+                <input
+                  type="date"
+                  name="initialDate"
+                  className="input input-bordered"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-col gap-4">
+                <label htmlFor="endDate" className="text-md ">
+                  Data Final
+                </label>
+                <input
+                  type="date"
+                  name="endDate"
+                  className="input input-bordered"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-4 mt-5">
+              <div className="divider divider-horizontal"></div>
+              <button
+                className="btn btn-primary"
+                onClick={() => setModalOpen(true)}
+              >
+                Exportar para CSV
+              </button>
+            </div>
           </div>
         </div>
+
         {responses && (
           <div>
             <FormResponses responses={responses} />
@@ -152,6 +199,19 @@ const FormResponsesPage = ({ params }: { params: { formId: string } }) => {
           </div>
         )}
       </div>
+
+      {isModalOpen && (
+        <ExportCsvModal
+          isOpen={isModalOpen}
+          onClose={(triggerExport, data) => {
+            setModalOpen(false);
+            if (triggerExport && data) {
+              handleExportCsv(data);
+            }
+          }}
+          users={users}
+        />
+      )}
     </Authorize>
   );
 };
