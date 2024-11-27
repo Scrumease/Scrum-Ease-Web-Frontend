@@ -94,7 +94,6 @@ const FormResponsesPage = ({ params }: { params: { formId: string } }) => {
         data.endDate,
         data.userIds
       );
-      console.log(csv.data as Blob);
       createFile(csv.data);
     } catch (error) {
       console.error("Error exporting to CSV:", error);
