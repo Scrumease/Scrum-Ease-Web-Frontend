@@ -27,7 +27,7 @@ const DailyForm: React.FC<DailyFormProps> = ({
           ? []
           : q.answerType === "text"
           ? ""
-          : "sim",
+          : "não",
       urgencyThreshold: q.advancedSettings?.urgencyThreshold || 0,
     })),
   });

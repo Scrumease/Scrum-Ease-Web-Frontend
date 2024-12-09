@@ -19,7 +19,9 @@ const UserResponse: React.FC<UserResponseProps> = ({ question, response }) => {
           </div>
         );
       case "yes/no":
-        return <p>R: {response.answer ? "Sim" : "Não"}</p>;
+        return (
+          <p>R: {response.answer.toLowerCase() == "sim" ? "Sim" : "Não"}</p>
+        );
       case "multi":
         return (
           <ul className="list-disc ml-4">
