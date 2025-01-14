@@ -6,8 +6,8 @@ import { services } from "@/app/services/services";
 import { useState, useCallback, useEffect } from "react";
 import Authorize from "../../Authorize";
 import { useRouter } from "next/navigation";
-import { ProjectDocument } from "@/app/interfaces/project/project.document";
 import { daysOfWeek } from "@/app/utils/constants/days";
+import FilterDrawer from "./filter-drawer";
 
 const CardView = ({ canCreate }: { canCreate: boolean }) => {
   const toast = useToast();
@@ -17,11 +17,12 @@ const CardView = ({ canCreate }: { canCreate: boolean }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [data, setData] = useState<FormDocument[]>([]);
   const [haveProject, setHaveProject] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const router = useRouter();
 
   const getAll = useCallback(
-    async (search?: string) => {
+    async (search: string = "", isActive: boolean = true) => {
       try {
         setLoading(true);
         const response = await services.formService.findAll({
@@ -29,6 +30,7 @@ const CardView = ({ canCreate }: { canCreate: boolean }) => {
           limit: 9,
           search,
           selfForms: false,
+          isActive,
         });
         setData(response.data);
         setTotalPages(Math.ceil(response.total / response.limit));
@@ -64,6 +66,13 @@ const CardView = ({ canCreate }: { canCreate: boolean }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
+  const handleFilters = async (filterData: {
+    isActive: boolean;
+    search?: string | undefined;
+  }) => {
+    await getAll(filterData.search, filterData.isActive);
+  };
+
   return (
     <>
       <Authorize props={{}}>
@@ -71,7 +80,10 @@ const CardView = ({ canCreate }: { canCreate: boolean }) => {
         {!loading && (
           <>
             <div className="flex flex-row justify-between mb-4 justify-items-center items-center">
-              <h3 className="text-lg w-full">Formulários</h3>
+              <div className="flex flex-row gap-1 items-center">
+                <h3 className="text-lg w-full">Formulários</h3>
+                <FilterDrawer handleFormFields={handleFilters} />
+              </div>
               {canCreate && haveProject && (
                 <button
                   type="button"
@@ -157,9 +169,7 @@ const FormCard = ({ form, onMarkAsDefault }: FormCardProps) => {
   return (
     <div className="card w-full bg-base-100 shadow-xl p-4">
       <div className="card-body">
-        <h2 className="card-title">
-          {(form.projectId as ProjectDocument)?.name}
-        </h2>
+        <h2 className="card-title">{form.project?.name}</h2>
 
         <p>{`Notificação às ${form.notifyTime} nos dias: ${daysOfWeek
           .filter((d) => form.notifyDays.includes(d.value as Days))

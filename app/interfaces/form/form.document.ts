@@ -5,6 +5,7 @@ import { TenantDocument } from "../tenant/tenant.document";
 export type FormDocument = {
   tenantId: string | TenantDocument;
   projectId: string | ProjectDocument;
+  project?: ProjectDocument;
   questions: QuestionDocument[];
   isCurrentForm: boolean;
   notifyDays: Days[];

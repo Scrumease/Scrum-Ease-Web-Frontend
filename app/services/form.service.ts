@@ -11,6 +11,7 @@ export interface FormService {
       projectId?: string;
       isCurrentForm?: boolean;
       selfForms?: boolean;
+      isActive?: boolean;
     }
   ) => Promise<FindPaginated<FormDocument>>;
   findOne: (id: string) => Promise<FormDocument>;
