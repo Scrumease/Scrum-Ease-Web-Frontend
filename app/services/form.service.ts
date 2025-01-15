@@ -24,8 +24,11 @@ const basePath = "/forms";
 export const formService: FormService = {
   create: (dto: CreateFormDto) =>
     api.post(basePath, dto).then((res) => res.data),
-  findAll: (filter) =>
-    api.get(basePath, { params: filter }).then((res) => res.data),
+  findAll: async (filter) => {
+    filter.isActive = filter.isActive ?? true;
+    const res = await api.get(basePath, { params: filter });
+    return res.data;
+  },
   findOne: (id: string) => api.get(`${basePath}/${id}`).then((res) => res.data),
   update: (id: string, dto: UpdateFormDto) =>
     api.put(`${basePath}/${id}`, dto).then((res) => res.data),

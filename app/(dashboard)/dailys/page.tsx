@@ -82,9 +82,7 @@ const ProjectCard = ({ formDocument }: { formDocument: FormDocument[] }) => {
               <MdDynamicForm className="text-8xl flex justify-center" />
             </figure>
             <div className="card-body">
-              <h2 className="card-title">
-                {(form.projectId as ProjectDocument).name}
-              </h2>
+              <h2 className="card-title">{form.project?.name}</h2>
               <Link
                 href={`dailys/${form._id}/anwser`}
                 className="btn btn-primary"
